@@ -18,4 +18,9 @@ function! s:dirvish_maps()
   nnoremap <silent><buffer> dd :DeleteItemUnderCursor<CR>
   nnoremap <silent><buffer> cc :RenameItemUnderCursor<CR>
 endfunction
+
+augroup dirvish_config
+  autocmd!
+  autocmd FileType dirvish call s:dirvish_maps()
+augroup END
 ```
