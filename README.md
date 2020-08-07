@@ -5,8 +5,11 @@
 ## Available Commands
 
 * `:CreateFile`: Create a new file with a given name in the current buffer's directory
+* `:CreateDirectory`: Create a new directory with a given name in the current buffer's directory
 * `:DeleteItemUnderCursor`: Delete the file under the cursor and refresh the filelist
 * `:RenameItemUnderCursor`: Rename the file under the cursor and refresh the filelist
+* `:CopyFilePathUnderCursor`: Yank the filepath under the cursor, which can later be used to move or copy
+* `:CopyToDirectory`: Copy the previously yanked filepath to the directory of the current buffer
 
 ## Usage
 
