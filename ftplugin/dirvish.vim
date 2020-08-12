@@ -8,20 +8,30 @@ command! CreateDirectory call s:createDirectory()
 command! RenameItemUnderCursor call s:renameItemUnderCursor()
 command! DeleteItemUnderCursor call s:deleteItemUnderCursor()
 command! CopyFilePathUnderCursor call s:copyFilePathUnderCursor()
+command! CopyVisualSelection call s:copyVisualSelection()
 command! CopyToDirectory call s:copyYankedItemToCurrentDirectory()
 command! MoveToDirectory call s:moveYankedItemToCurrentDirectory()
 
-" Not used right now
+" https://stackoverflow.com/a/47051271
 function! s:getVisualSelection()
-    " Why is this not a built-in Vim script function?!
-    let [line_start, column_start] = getpos("'<")[1:2]
-    let [line_end, column_end] = getpos("'>")[1:2]
+  if mode()=="v"
+        let [line_start, column_start] = getpos("v")[1:2]
+        let [line_end, column_end] = getpos(".")[1:2]
+    else
+        let [line_start, column_start] = getpos("'<")[1:2]
+        let [line_end, column_end] = getpos("'>")[1:2]
+    end
+    if (line2byte(line_start)+column_start) > (line2byte(line_end)+column_end)
+        let [line_start, column_start, line_end, column_end] =
+        \   [line_end, column_end, line_start, column_start]
+    end
     let lines = getline(line_start, line_end)
     if len(lines) == 0
-        return ''
+            return ''
     endif
-    let lines[-1] = lines[-1][: column_end - (&selection == 'inclusive' ? 1 : 2)]
+    let lines[-1] = lines[-1][: column_end - 1]
     let lines[0] = lines[0][column_start - 1:]
+    return lines
 endfunction
 
 function! s:createFile() abort
@@ -72,7 +82,17 @@ function! s:renameItemUnderCursor() abort
 endfunction
 
 function! s:isPreviouslyYankedItemValid() abort
-  return @d != ''
+  if len(s:yanked) < 1
+    return false
+  endif
+
+  for target in s:yanked
+    if target == ''
+      return false
+    endif
+  endfor
+
+  return true
 endfunction
 
 function! s:promptUserForRenameOrSkip(filename) abort
@@ -80,7 +100,7 @@ function! s:promptUserForRenameOrSkip(filename) abort
   if renameOrSkip != 1
     return ''
   endif
-  return input('Rename into: ', a:filename)
+  return input('Rename to: ', a:filename)
 endfunction
 
 function! s:moveYankedItemToCurrentDirectory() abort
@@ -91,32 +111,34 @@ function! s:moveYankedItemToCurrentDirectory() abort
 
   let cwd = getcwd()
   let destinationDir = expand("%")
-  let item = @d
-  let filename = fnamemodify(item, ':t')
-  let directoryName = split(fnamemodify(item, ':p:h'), '/')[-1]
+  for i in s:yanked
+    let item = i
+    let filename = fnamemodify(item, ':t')
+    let directoryName = split(fnamemodify(item, ':p:h'), '/')[-1]
 
-  if isdirectory(item)
-    if (isdirectory(destinationDir . directoryName))
-      let directoryName = s:promptUserForRenameOrSkip(directoryName)
-      redraw
-      if directoryName == ''
-        return
+    if isdirectory(item)
+      if (isdirectory(destinationDir . directoryName))
+        let directoryName = s:promptUserForRenameOrSkip(directoryName)
+        redraw
+        if directoryName == ''
+          return
+        endif
       endif
-    endif
-    let cmd = printf(':!mv %s %s', item, destinationDir . directoryName)
-  else
-    if (!empty(glob(destinationDir . filename)))
-      let filename = s:promptUserForRenameOrSkip(filename)
-      redraw
-      if filename == ''
-        return
+      let cmd = printf(':!mv %s %s', item, destinationDir . directoryName)
+    else
+      if (!empty(glob(destinationDir . filename)))
+        let filename = s:promptUserForRenameOrSkip(filename)
+        redraw
+        if filename == ''
+          return
+        endif
       endif
+
+      let cmd = printf(':!mv %s %s', item, destinationDir . filename)
     endif
 
-    let cmd = printf(':!mv %s %s', item, destinationDir . filename)
-  endif
-
-  silent execute(cmd)
+    silent execute(cmd)
+  endfor
   norm! R
 endfunction
 
@@ -128,46 +150,44 @@ function! s:copyYankedItemToCurrentDirectory() abort
 
   let cwd = getcwd()
   let destinationDir = expand("%")
-  let item = @d
-  let filename = fnamemodify(item, ':t')
-  let directoryName = split(fnamemodify(item, ':p:h'), '/')[-1]
 
-  if isdirectory(item)
-    if (isdirectory(destinationDir . directoryName))
-      let directoryName = s:promptUserForRenameOrSkip(directoryName)
-      redraw
-      if directoryName == ''
-        return
+  for i in s:yanked
+    let item = i
+    let filename = fnamemodify(item, ':t')
+    let directoryName = split(fnamemodify(item, ':p:h'), '/')[-1]
+
+    if isdirectory(item)
+      if (isdirectory(destinationDir . directoryName))
+        let directoryName = s:promptUserForRenameOrSkip(directoryName)
+        redraw
+        if directoryName == ''
+          return
+        endif
       endif
-    endif
-    let cmd = printf(':!cp -r %s %s', item, destinationDir . directoryName)
-  else
-    if (!empty(glob(destinationDir . filename)))
-      let filename = s:promptUserForRenameOrSkip(filename)
-      redraw
-      if filename == ''
-        return
+      let cmd = printf(':!cp -r %s %s', item, destinationDir . directoryName)
+    else
+      if (!empty(glob(destinationDir . filename)))
+        let filename = s:promptUserForRenameOrSkip(filename)
+        redraw
+        if filename == ''
+          return
+        endif
       endif
+
+      let cmd = printf(':!cp %s %s', item, destinationDir . filename)
     endif
 
-    let cmd = printf(':!cp %s %s', item, destinationDir . filename)
-  endif
+    silent execute(cmd)
+  endfor
 
-  silent execute(cmd)
   norm! R
 endfunction
 
 function! s:copyFilePathUnderCursor() abort
-  normal! ^"dy$
+  let s:yanked = [trim(getline('.'))]
 endfunction
 
-function! s:visual() abort
-  let lines = s:get_visual_selection()
-  echomsg lines
-endfunction
-
-function! s:reload() abort
-  if &filetype ==? 'dirvish'
-    Dirvish %
-  endif
+function! s:copyVisualSelection() abort
+  let lines = s:getVisualSelection()
+  let s:yanked = lines
 endfunction
