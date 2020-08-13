@@ -1,16 +1,7 @@
-if exists("g:loaded_dirvish_doish") || &cp || v:version < 700
+if exists("b:loaded_dirvish_doish") 
   finish
 endif
-let g:loaded_dirvish_doish = 1
-
-command! CreateFile call s:createFile()
-command! CreateDirectory call s:createDirectory()
-command! RenameItemUnderCursor call s:renameItemUnderCursor()
-command! DeleteItemUnderCursor call s:deleteItemUnderCursor()
-command! CopyFilePathUnderCursor call s:copyFilePathUnderCursor()
-command! CopyVisualSelection call s:copyVisualSelection()
-command! CopyToDirectory call s:copyYankedItemToCurrentDirectory()
-command! MoveToDirectory call s:moveYankedItemToCurrentDirectory()
+let b:loaded_dirvish_doish = 1
 
 " https://stackoverflow.com/a/47051271
 function! s:getVisualSelection()
@@ -59,16 +50,25 @@ function! s:createDirectory() abort
     echomsg printf('"%s" already exists.', dirpath)
     return
   endif
-  let cmd = printf(':!mkdir "%s"', dirpath)
-  silent execute(cmd)
+  let cmd = "mkdir " . dirpath
+
+  silent execute(":!" . cmd)
+  if v:shell_error
+    call s:logError(cmd)
+  endif
+
   normal! R
 endf
 
 function! s:deleteItemUnderCursor() abort
   " Grab the line under the cursor. Each line is a filepath
   let target = trim(getline('.'))
+  let cmd = "trash " . target
   " Feed the filepath to a delete command like, rm or trash
-  silent execute(printf(':!trash %s', target))
+  silent execute(":!" . cmd)
+  if v:shell_error
+    call s:logError(cmd)
+  endif
   " Reload the buffer
   normal! R
 endfunction
@@ -83,16 +83,16 @@ endfunction
 
 function! s:isPreviouslyYankedItemValid() abort
   if len(s:yanked) < 1
-    return false
+    return 0
   endif
 
   for target in s:yanked
     if target == ''
-      return false
+      return 0
     endif
   endfor
 
-  return true
+  return 1
 endfunction
 
 function! s:promptUserForRenameOrSkip(filename) abort
@@ -104,7 +104,7 @@ function! s:promptUserForRenameOrSkip(filename) abort
 endfunction
 
 function! s:moveYankedItemToCurrentDirectory() abort
-  if !IsPreviouslyYankedItemValid()
+  if !s:isPreviouslyYankedItemValid()
     echomsg 'Select a path first!'
     return
   endif
@@ -143,7 +143,7 @@ function! s:moveYankedItemToCurrentDirectory() abort
 endfunction
 
 function! s:copyYankedItemToCurrentDirectory() abort
-  if !IsPreviouslyYankedItemValid()
+  if !s:isPreviouslyYankedItemValid()
     echomsg 'Select a path first!'
     return
   endif
@@ -191,3 +191,44 @@ function! s:copyVisualSelection() abort
   let lines = s:getVisualSelection()
   let s:yanked = lines
 endfunction
+
+function! s:logError(cmd) abort
+  let error = system(a:cmd)
+  echohl WarningMsg | echo error | echohl None
+endfunction
+
+nnoremap <silent> <Plug>(doish-create-file) :<C-U> call <SID>createFile()<CR>
+nnoremap <silent> <Plug>(doish-create-directory) :<C-U> call <SID>createDirectory()<CR>
+nnoremap <silent> <Plug>(doish-rename) :<C-U> call <SID>renameItemUnderCursor()<CR>
+nnoremap <silent> <Plug>(doish-delete) :<C-U> call <SID>deleteItemUnderCursor()<CR>
+nnoremap <silent> <Plug>(doish-yank) :<C-U> call <SID>copyFilePathUnderCursor()<CR>
+xnoremap <silent> <Plug>(doish-yank) :<C-U> call <SID>copyVisualSelection()<CR>
+nnoremap <silent> <Plug>(doish-copy) :<C-U> call <SID>copyYankedItemToCurrentDirectory()<CR>
+nnoremap <silent> <Plug>(doish-move) :<C-U> call <SID>moveYankedItemToCurrentDirectory()<CR>
+
+let s:nowait = (v:version > 703 ? '<nowait>' : '')
+
+if !hasmapto('<Plug>(doish-create-file)', 'n')
+  execute 'nmap '.s:nowait.'<buffer> a <Plug>(doish-create-file)'
+endif
+if !hasmapto('<Plug>(doish-create-directory)', 'n')
+  execute 'nmap '.s:nowait.'<buffer> A <Plug>(doish-create-directory)'
+endif
+if !hasmapto('<Plug>(doish-delete)', 'n')
+  execute 'nmap '.s:nowait.'<buffer> dd <Plug>(doish-delete)'
+endif
+if !hasmapto('<Plug>(doish-rename)', 'n')
+  execute 'nmap '.s:nowait.'<buffer> r <Plug>(doish-rename)'
+endif
+if !hasmapto('<Plug>(doish-yank)', 'n')
+  execute 'nmap '.s:nowait.'<buffer> yy <Plug>(doish-yank)'
+endif
+if !hasmapto('<Plug>(doish-yank)', 'v')
+  execute 'xmap '.s:nowait.'<buffer> yy <Plug>(doish-yank)'
+endif
+if !hasmapto('<Plug>(doish-copy)', 'n')
+  execute 'nmap '.s:nowait.'<buffer> <leader>p <Plug>(doish-copy)'
+endif
+if !hasmapto('<Plug>(doish-move)', 'n')
+  execute 'nmap '.s:nowait.'<buffer> <leader>P <Plug>(doish-move)'
+endif
