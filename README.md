@@ -10,7 +10,7 @@ Make sure [dirvish.vim][dirvish] is installed, and install with your favorite pa
 
 ```vim
 Plug 'justinmk/vim-dirvish'
-Plug 'roginfarrer/vim-dirvish-dovish'
+Plug 'roginfarrer/vim-dirvish-dovish', {'branch': 'main'}
 ```
 
 ## Mappings
