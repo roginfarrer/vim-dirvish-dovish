@@ -21,8 +21,8 @@ Plug 'roginfarrer/vim-dirvish-dovish', {'branch': 'main'}
 
 | Function                                | Default | Key                               |
 | --------------------------------------- | ------- | --------------------------------- |
-| Create file                             | `n`     | `<Plug>(dovish_create_file)`      |
-| Create directory                        | `N`     | `<Plug>(dovish_create_directory)` |
+| Create file                             | `i`     | `<Plug>(dovish_create_file)`      |
+| Create directory                        | `I`     | `<Plug>(dovish_create_directory)` |
 | Delete under cursor                     | `dd`    | `<Plug>(dovish_delete)`           |
 | Rename under cursor                     | `r`     | `<Plug>(dovish_rename)`           |
 | Yank under cursor (or visual selection) | `yy`    | `<Plug>(dovish_yank)`             |
@@ -39,8 +39,8 @@ let g:dirvish_dovish_map_keys = 0
 unmap <buffer> p
 
 " Your preferred mappings
-nmap <silent><buffer> n <Plug>(dovish_create_file)
-nmap <silent><buffer> N <Plug>(dovish_create_directory)
+nmap <silent><buffer> i <Plug>(dovish_create_file)
+nmap <silent><buffer> I <Plug>(dovish_create_directory)
 nmap <silent><buffer> dd <Plug>(dovish_delete)
 nmap <silent><buffer> r <Plug>(dovish_rename)
 nmap <silent><buffer> yy <Plug>(dovish_yank)

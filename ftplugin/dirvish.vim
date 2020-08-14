@@ -42,7 +42,7 @@ function! s:createFile() abort
   endif
 
   " Reload the buffer
-  normal! R
+  normal R
 endf
 
 function! s:createDirectory() abort
@@ -63,7 +63,7 @@ function! s:createDirectory() abort
     call s:logError(cmd)
   endif
 
-  normal! R
+  normal R
 endf
 
 function! s:deleteItemUnderCursor() abort
@@ -76,7 +76,7 @@ function! s:deleteItemUnderCursor() abort
     call s:logError(cmd)
   endif
   " Reload the buffer
-  normal! R
+  normal R
 endfunction
 
 function! s:renameItemUnderCursor() abort
@@ -88,7 +88,7 @@ function! s:renameItemUnderCursor() abort
   if v:shell_error
     call s:logError(cmd)
   endif
-  normal! R
+  normal R
 endfunction
 
 function! s:isPreviouslyYankedItemValid() abort
@@ -227,10 +227,10 @@ endif
 
 if g:dirvish_dovish_map_keys
   if !hasmapto('<Plug>(dovish_create_file)', 'n')
-    execute 'nmap <silent><buffer> n <Plug>(dovish_create_file)'
+    execute 'nmap <silent><buffer> a <Plug>(dovish_create_file)'
   endif
   if !hasmapto('<Plug>(dovish_create_directory)', 'n')
-    execute 'nmap <silent><buffer> N <Plug>(dovish_create_directory)'
+    execute 'nmap <silent><buffer> A <Plug>(dovish_create_directory)'
   endif
   if !hasmapto('<Plug>(dovish_delete)', 'n')
     execute 'nmap <silent><buffer> dd <Plug>(dovish_delete)'
