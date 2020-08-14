@@ -1,29 +1,49 @@
-# 🧰 vim-dirvish-doish
+# 🧰 vim-dirvish-dovish
 
-> The file manipulation commands for [vim-dirvish](https://github.com/justinmk/vim-dirvish) that you've always wanted
+> The file manipulation commands for [vim-dirvish][dirvish] that you've always wanted
 
-## Available Commands
+Have only tested on MacOS and Neovim, but it should work with Vim.
 
-* `:CreateFile`: Create a new file with a given name in the current buffer's directory
-* `:CreateDirectory`: Create a new directory with a given name in the current buffer's directory
-* `:DeleteItemUnderCursor`: Delete the file under the cursor and refresh the filelist
-* `:RenameItemUnderCursor`: Rename the file under the cursor and refresh the filelist
-* `:CopyFilePathUnderCursor`: Yank the filepath under the cursor, which can later be used to move or copy
-* `:CopyToDirectory`: Copy the previously yanked filepath to the directory of the current buffer
+## Installation
 
-## Usage
-
-Example bindings that are mapped only within a dirvish buffer
+Make sure [dirvish.vim][dirvish] is installed, and install with your favorite package manager:
 
 ```vim
-function! s:dirvish_maps()
-  nnoremap <silent><buffer> I :CreateFile<CR>
-  nnoremap <silent><buffer> dd :DeleteItemUnderCursor<CR>
-  nnoremap <silent><buffer> cc :RenameItemUnderCursor<CR>
-endfunction
-
-augroup dirvish_config
-  autocmd!
-  autocmd FileType dirvish call s:dirvish_maps()
-augroup END
+Plug 'justinmk/vim-dirvish'
+Plug 'roginfarrer/vim-dirvish-dovish'
 ```
+
+## Mappings
+
+
+| Function                                | Default | Key                               |
+| --------------------------------------- | ------- | --------------------------------- |
+| Create file                             | `n`     | `<Plug>(dovish_create_file)`      |
+| Create directory                        | `N`     | `<Plug>(dovish_create_directory)` |
+| Delete under cursor                     | `dd`    | `<Plug>(dovish_delete)`           |
+| Rename under cursor                     | `r`     | `<Plug>(dovish_rename)`           |
+| Yank under cursor (or visual selection) | `yy`    | `<Plug>(dovish_yank)`             |
+| Copy file to current directory          | `pp`    | `<Plug>(dovish_copy)`             |
+| Move file to current directory          | `PP`    | `<Plug>(dovish_move)`             |
+
+You can unmap all of the maps above and set your own (mine are below). Add this to `ftplugin/dirvish.vim`:
+
+```vim
+" unmap all default mappings
+let g:dirvish_dovish_map_keys = 0
+
+" unmap dirvish default
+unmap <buffer> p
+
+" Your preferred mappings
+nmap <silent><buffer> n <Plug>(dovish_create_file)
+nmap <silent><buffer> N <Plug>(dovish_create_directory)
+nmap <silent><buffer> dd <Plug>(dovish_delete)
+nmap <silent><buffer> r <Plug>(dovish_rename)
+nmap <silent><buffer> yy <Plug>(dovish_yank)
+xmap <silent><buffer> yy <Plug>(dovish_yank)
+nmap <silent><buffer> p <Plug>(dovish_copy)
+nmap <silent><buffer> P <Plug>(dovish_move)
+```
+
+[dirvish]: https://github.com/justinmk/vim-dirvish
