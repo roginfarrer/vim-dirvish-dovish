@@ -4,17 +4,20 @@
 
 Have only tested on MacOS and Neovim, but it should work with Vim.
 
-## Installation
+## Installation & Requirements
 
-Make sure [dirvish.vim][dirvish] is installed, and install with your favorite package manager:
+You'll need:
+
+* [dirvish.vim][dirvish]
+* A CLI that provides a `trash` command, such as [trash](https://formulae.brew.sh/formula/trash) or [trash-cli](https://github.com/sindresorhus/trash-cli)
+
+Then install with your favorite package manager:
 
 ```vim
-Plug 'justinmk/vim-dirvish'
 Plug 'roginfarrer/vim-dirvish-dovish', {'branch': 'main'}
 ```
 
 ## Mappings
-
 
 | Function                                | Default | Key                               |
 | --------------------------------------- | ------- | --------------------------------- |
