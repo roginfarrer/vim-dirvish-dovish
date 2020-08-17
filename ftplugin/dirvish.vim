@@ -34,9 +34,8 @@ function! s:createFile() abort
   endif
   " Append filename to the path of the current buffer
   let filepath = expand("%") . filename
-  let cmd = "touch " . filepath
 
-  silent execute(":!" . cmd)
+  let output = system("touch " . filepath)
   if v:shell_error
     call s:logError(cmd)
   endif
@@ -56,11 +55,10 @@ function! s:createDirectory() abort
     echomsg printf('"%s" already exists.', dirpath)
     return
   endif
-  let cmd = "mkdir " . dirpath
 
-  silent execute(":!" . cmd)
+  let output = system("mkdir " . dirpath)
   if v:shell_error
-    call s:logError(cmd)
+    call s:logError(output)
   endif
 
   normal R
@@ -71,9 +69,9 @@ function! s:deleteItemUnderCursor() abort
   let target = trim(getline('.'))
   let cmd = "trash " . target
   " Feed the filepath to a delete command like, rm or trash
-  silent execute(":!" . cmd)
+  output = system("trash " . target)
   if v:shell_error
-    call s:logError(cmd)
+    call s:logError(output)
   endif
   " Reload the buffer
   normal R
@@ -84,9 +82,9 @@ function! s:renameItemUnderCursor() abort
   let filename = fnamemodify(target, ':t')
   let newname = input('Rename: ', filename)
   let cmd = printf('mv "%s" "%s"', target, expand("%") . newname)
-  silent execute(":!" . cmd)
+  let output = system(cmd)
   if v:shell_error
-    call s:logError(cmd)
+    call s:logError(output)
   endif
   normal R
 endfunction
@@ -146,9 +144,9 @@ function! s:moveYankedItemToCurrentDirectory() abort
       let cmd = printf('mv %s %s', item, destinationDir . filename)
     endif
 
-    silent execute(":!" . cmd)
+    let output = system(cmd)
     if v:shell_error
-      call s:logError(cmd)
+      call s:logError(output)
     endif
   endfor
   norm! R
@@ -189,9 +187,9 @@ function! s:copyYankedItemToCurrentDirectory() abort
       let cmd = printf('cp %s %s', item, destinationDir . filename)
     endif
 
-    silent execute(":!" . cmd)
+    let output = system(cmd)
     if v:shell_error
-      call s:logError(cmd)
+      call s:logError(output)
     endif
   endfor
 
@@ -207,9 +205,10 @@ function! s:copyVisualSelection() abort
   let s:yanked = lines
 endfunction
 
-function! s:logError(cmd) abort
-  let error = system(a:cmd)
-  echohl WarningMsg | echo error | echohl None
+function! s:logError(error) abort
+  " clear any current cmdline msg
+  redraw
+  echohl WarningMsg | echomsg a:error | echohl None
 endfunction
 
 nnoremap <silent><buffer> <Plug>(dovish_create_file) :<C-U> call <SID>createFile()<CR>
