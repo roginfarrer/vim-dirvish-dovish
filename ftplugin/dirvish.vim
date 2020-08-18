@@ -69,7 +69,7 @@ function! s:deleteItemUnderCursor() abort
   let target = trim(getline('.'))
   let cmd = "trash " . target
   " Feed the filepath to a delete command like, rm or trash
-  output = system("trash " . target)
+  let output = system("trash " . target)
   if v:shell_error
     call s:logError(output)
   endif
