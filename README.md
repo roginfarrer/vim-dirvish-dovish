@@ -21,8 +21,8 @@ Plug 'roginfarrer/vim-dirvish-dovish', {'branch': 'main'}
 
 | Function                                | Default | Key                               |
 | --------------------------------------- | ------- | --------------------------------- |
-| Create file                             | `i`     | `<Plug>(dovish_create_file)`      |
-| Create directory                        | `I`     | `<Plug>(dovish_create_directory)` |
+| Create file                             | `a`     | `<Plug>(dovish_create_file)`      |
+| Create directory                        | `A`     | `<Plug>(dovish_create_directory)` |
 | Delete under cursor                     | `dd`    | `<Plug>(dovish_delete)`           |
 | Rename under cursor                     | `r`     | `<Plug>(dovish_rename)`           |
 | Yank under cursor (or visual selection) | `yy`    | `<Plug>(dovish_yank)`             |
