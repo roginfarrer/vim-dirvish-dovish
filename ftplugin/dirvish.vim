@@ -243,7 +243,7 @@ nnoremap <silent><buffer> <Plug>(dovish_create_directory) :<C-U> call <SID>creat
 nnoremap <silent><buffer> <Plug>(dovish_rename) :<C-U> call <SID>renameItemUnderCursor()<CR>
 nnoremap <silent><buffer> <Plug>(dovish_delete) :<C-U> call <SID>deleteItemUnderCursor()<CR>
 nnoremap <silent><buffer> <Plug>(dovish_yank) :<C-U> call <SID>copyFilePathUnderCursor()<CR>
-xnoremap <buffer> <Plug>(dovish_yank) :<C-U> call <SID>copyVisualSelection()<CR>
+xnoremap <silent><buffer> <Plug>(dovish_yank) :<C-U> call <SID>copyVisualSelection()<CR>
 nnoremap <silent><buffer> <Plug>(dovish_copy) :<C-U> call <SID>copyYankedItemToCurrentDirectory()<CR>
 nnoremap <silent><buffer> <Plug>(dovish_move) :<C-U> call <SID>moveYankedItemToCurrentDirectory()<CR>
 
