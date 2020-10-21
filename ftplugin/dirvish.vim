@@ -68,8 +68,12 @@ endf
 function! s:deleteItemUnderCursor() abort
   " Grab the line under the cursor. Each line is a filepath
   let target = trim(getline('.'))
-  let cmd = "trash " . target
   " Feed the filepath to a delete command like, rm or trash
+  let check = confirm("Delete ".target, "&Yes\n&No", 2)
+  if check != 1
+    echo 'Cancelled.'
+    return
+  endif
   let output = system("trash " . target)
   if v:shell_error
     call s:logError(output)
@@ -83,6 +87,9 @@ function! s:renameItemUnderCursor() abort
   let target = trim(getline('.'))
   let filename = fnamemodify(target, ':t')
   let newname = input('Rename: ', filename)
+  if empty(newname) || newname == filename
+    return
+  endif
   let cmd = printf('mv "%s" "%s"', target, expand("%") . newname)
   let output = system(cmd)
   if v:shell_error
@@ -205,11 +212,24 @@ endfunction
 
 function! s:copyFilePathUnderCursor() abort
   let s:yanked = [trim(getline('.'))]
+  echo 'Selected '.s:yanked[0]
 endfunction
 
 function! s:copyVisualSelection() abort
   let lines = s:getVisualSelection()
   let s:yanked = lines
+
+  let msg = 'Selected:'
+  for file in lines
+    " Print a nicely formatted message:
+    "
+    " @example:
+    " Selected:
+    " - file/path
+    " - another/file/path
+    let msg = msg."\n- ".file
+  endfor
+  echo msg
 endfunction
 
 function! s:logError(error) abort
