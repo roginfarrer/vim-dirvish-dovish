@@ -41,7 +41,7 @@ function! s:createFile() abort
   endif
 
   " Reload the buffer
-  normal R
+  Dirvish %
 endf
 
 function! s:createDirectory() abort
@@ -61,7 +61,8 @@ function! s:createDirectory() abort
     call s:logError(output)
   endif
 
-  normal R
+  " Reload the buffer
+  Dirvish %
 endf
 
 function! s:deleteItemUnderCursor() abort
@@ -77,8 +78,9 @@ function! s:deleteItemUnderCursor() abort
   if v:shell_error
     call s:logError(output)
   endif
+
   " Reload the buffer
-  normal R
+  Dirvish %
 endfunction
 
 function! s:renameItemUnderCursor() abort
@@ -93,7 +95,9 @@ function! s:renameItemUnderCursor() abort
   if v:shell_error
     call s:logError(output)
   endif
-  normal R
+
+  " Reload the buffer
+  Dirvish %
 endfunction
 
 function! s:isPreviouslyYankedItemValid() abort
@@ -156,7 +160,9 @@ function! s:moveYankedItemToCurrentDirectory() abort
       call s:logError(output)
     endif
   endfor
-  norm! R
+
+  " Reload the buffer
+  Dirvish %
 endfunction
 
 function! s:copyYankedItemToCurrentDirectory() abort
@@ -200,7 +206,8 @@ function! s:copyYankedItemToCurrentDirectory() abort
     endif
   endfor
 
-  norm! R
+  " Reload the buffer
+  Dirvish %
 endfunction
 
 function! s:copyFilePathUnderCursor() abort
