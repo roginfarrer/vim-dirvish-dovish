@@ -4,6 +4,18 @@ if exists("b:dovish_ftplugin")
 endif
 let b:dovish_ftplugin = 1
 
+let s:delete_command = g:dovish_delete_command
+let s:move_command = g:dovish_move_command
+let s:rename_command = g:dovish_rename_command
+let s:copy_command = g:dovish_copy_command
+let s:copy_directoy_command = g:dovish_copy_directory_command
+
+if empty(s:copy_command) 
+  function! s:copy_command(target, destination) abort
+    return 'cp ' . a:target . ' ' . a:destination
+  endfunction
+end
+
 " https://stackoverflow.com/a/47051271
 function! s:getVisualSelection()
   if mode()=="v"
@@ -197,7 +209,8 @@ function! s:copyYankedItemToCurrentDirectory() abort
         endif
       endif
 
-      let cmd = printf('cp %s %s', item, destinationDir . filename)
+      let cmd = s:copy_command(item, destinationDir . filename)
+      " let cmd = printf('cp %s %s', item, destinationDir . filename)
     endif
 
     let output = system(cmd)
