@@ -8,8 +8,8 @@ Have only tested on MacOS and Neovim, but it should work with Vim.
 
 You'll need:
 
-* [dirvish.vim][dirvish]
-* A CLI that provides a `trash` command, such as [trash](https://formulae.brew.sh/formula/trash) or [trash-cli](https://github.com/sindresorhus/trash-cli)
+- [dirvish.vim][dirvish]
+- A CLI that provides a `trash` command, such as [trash](https://formulae.brew.sh/formula/trash) or [trash-cli](https://github.com/sindresorhus/trash-cli)
 
 Then install with your favorite package manager:
 
@@ -47,6 +47,37 @@ nmap <silent><buffer> yy <Plug>(dovish_yank)
 xmap <silent><buffer> yy <Plug>(dovish_yank)
 nmap <silent><buffer> p <Plug>(dovish_copy)
 nmap <silent><buffer> P <Plug>(dovish_move)
+```
+
+## Customize Commands
+
+Most file operations can be customized. Below are the defaults:
+
+```vim
+" Used for <Plug>(dovish_yank)
+function! g:DovishCopyFile(target, destination) abort
+  return 'cp ' . a:target . ' ' . a:destination
+endfunction
+
+" Used for <Plug>(dovish_yank)
+function! g:DovishCopyDirectory(target, destination) abort
+  return 'cp -r' . a:target . ' ' . a:destination
+endfunction
+
+" Used for <Plug>(dovish_move)
+function! g:DovishMove(target, destination) abort
+  return 'mv ' . a:target . ' ' . a:destination
+endfunction
+
+" Used for <Plug>(dovish_delete)
+function! g:DovishDelete(target) abort
+  return 'trash ' . a:target
+endfunction
+
+" Used for <Plug>(dovish_rename)
+function! g:DovishRename(target, destination) abort
+  return 'mv ' . a:target . ' ' . a:destination
+endfunction
 ```
 
 [dirvish]: https://github.com/justinmk/vim-dirvish
