@@ -4,6 +4,36 @@ if exists("b:dovish_ftplugin")
 endif
 let b:dovish_ftplugin = 1
 
+if !exists('g:DovishCopyFile') 
+  function! g:DovishCopyFile(target, destination) abort
+    return 'cp ' . a:target . ' ' . a:destination
+  endfunction
+end
+
+if !exists('g:DovishCopyDirectory') 
+  function! g:DovishCopyDirectory(target, destination) abort
+    return 'cp -r' . a:target . ' ' . a:destination
+  endfunction
+end
+
+if !exists('g:DovishMove')
+  function! g:DovishMove(target, destination) abort
+    return 'mv ' . a:target . ' ' . a:destination
+  endfunction
+end
+
+if !exists('g:DovishDelete')
+  function! g:DovishDelete(target) abort
+    return 'trash ' . a:target
+  endfunction
+end
+
+if !exists('g:DovishRename')
+  function! g:DovishRename(target, destination) abort
+    return 'mv ' . a:target . ' ' . a:destination
+  endfunction
+end
+
 " https://stackoverflow.com/a/47051271
 function! s:getVisualSelection()
   if mode()=="v"
@@ -74,7 +104,7 @@ function! s:deleteItemUnderCursor() abort
     echo 'Cancelled.'
     return
   endif
-  let output = system("trash " . target)
+  let output = system(g:DovishDelete(target))
   if v:shell_error
     call s:logError(output)
   endif
@@ -90,7 +120,7 @@ function! s:renameItemUnderCursor() abort
   if empty(newname) || newname == filename
     return
   endif
-  let cmd = printf('mv "%s" "%s"', target, expand("%") . newname)
+  let cmd = g:DovishRename(target, expand("%") . newname)
   let output = system(cmd)
   if v:shell_error
     call s:logError(output)
@@ -143,7 +173,7 @@ function! s:moveYankedItemToCurrentDirectory() abort
           return
         endif
       endif
-      let cmd = printf('mv %s %s', item, destinationDir . directoryName)
+      let cmd = g:DovishMove(item, destinationDir . directoryName)
     else
       if (!empty(glob(destinationDir . filename)))
         let filename = s:promptUserForRenameOrSkip(filename)
@@ -187,7 +217,7 @@ function! s:copyYankedItemToCurrentDirectory() abort
           return
         endif
       endif
-      let cmd = printf('cp -r %s %s', item, destinationDir . directoryName)
+      let cmd = g:DovishCopyDirectory(item, destinationDir . directoryName)
     else
       if (!empty(glob(destinationDir . filename)))
         let filename = s:promptUserForRenameOrSkip(filename)
@@ -197,7 +227,7 @@ function! s:copyYankedItemToCurrentDirectory() abort
         endif
       endif
 
-      let cmd = printf('cp %s %s', item, destinationDir . filename)
+      let cmd = g:DovishCopyFile(item, destinationDir . filename)
     endif
 
     let output = system(cmd)
