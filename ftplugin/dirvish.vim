@@ -1,36 +1,36 @@
 " Only do this when not done yet for this buffer
-if exists("b:dovish_ftplugin") 
+if exists("b:dovish_ftplugin")
   finish
 endif
 let b:dovish_ftplugin = 1
 
-if !exists('g:DovishCopyFile') 
+if !exists('g:DovishCopyFile')
   function! g:DovishCopyFile(target, destination) abort
-    return 'cp ' . a:target . ' ' . a:destination
+    return 'cp ' . fnameescape(a:target) . ' ' . fnameescape(a:destination)
   endfunction
 end
 
-if !exists('g:DovishCopyDirectory') 
+if !exists('g:DovishCopyDirectory')
   function! g:DovishCopyDirectory(target, destination) abort
-    return 'cp -r' . a:target . ' ' . a:destination
+    return 'cp -r ' . fnameescape(a:target) . ' ' . fnameescape(a:destination)
   endfunction
 end
 
 if !exists('g:DovishMove')
   function! g:DovishMove(target, destination) abort
-    return 'mv ' . a:target . ' ' . a:destination
+    return 'mv ' . fnameescape(a:target) . ' ' . fnameescape(a:destination)
   endfunction
 end
 
 if !exists('g:DovishDelete')
   function! g:DovishDelete(target) abort
-    return 'trash ' . a:target
+    return 'trash ' . fnameescape(a:target)
   endfunction
 end
 
 if !exists('g:DovishRename')
   function! g:DovishRename(target, destination) abort
-    return 'mv ' . a:target . ' ' . a:destination
+    return 'mv ' . fnameescape(a:target) . ' ' . fnameescape(a:destination)
   endfunction
 end
 
@@ -65,7 +65,7 @@ function! s:createFile() abort
   " Append filename to the path of the current buffer
   let filepath = expand("%") . filename
 
-  let output = system("touch " . filepath)
+  let output = system("touch " . fnameescape(filepath))
   if v:shell_error
     call s:logError(cmd)
   endif
@@ -86,7 +86,7 @@ function! s:createDirectory() abort
     return
   endif
 
-  let output = system("mkdir " . dirpath)
+  let output = system("mkdir " . fnameescape(dirpath))
   if v:shell_error
     call s:logError(output)
   endif
@@ -182,7 +182,7 @@ function! s:moveYankedItemToCurrentDirectory() abort
           return
         endif
       endif
-      let cmd = printf('mv %s %s', item, destinationDir . filename)
+      let cmd = g:DovishMove(item, destinationDir . filename)
     endif
 
     let output = system(cmd)
