@@ -6,31 +6,31 @@ let b:dovish_ftplugin = 1
 
 if !exists('g:DovishCopyFile')
   function! g:DovishCopyFile(target, destination) abort
-    return 'cp ' . fnameescape(a:target) . ' ' . fnameescape(a:destination)
+    return 'cp ' . shellescape(a:target) . ' ' . shellescape(a:destination)
   endfunction
 end
 
 if !exists('g:DovishCopyDirectory')
   function! g:DovishCopyDirectory(target, destination) abort
-    return 'cp -r ' . fnameescape(a:target) . ' ' . fnameescape(a:destination)
+    return 'cp -r ' . shellescape(a:target) . ' ' . shellescape(a:destination)
   endfunction
 end
 
 if !exists('g:DovishMove')
   function! g:DovishMove(target, destination) abort
-    return 'mv ' . fnameescape(a:target) . ' ' . fnameescape(a:destination)
+    return 'mv ' . shellescape(a:target) . ' ' . shellescape(a:destination)
   endfunction
 end
 
 if !exists('g:DovishDelete')
   function! g:DovishDelete(target) abort
-    return 'trash ' . fnameescape(a:target)
+    return 'trash ' . shellescape(a:target)
   endfunction
 end
 
 if !exists('g:DovishRename')
   function! g:DovishRename(target, destination) abort
-    return 'mv ' . fnameescape(a:target) . ' ' . fnameescape(a:destination)
+    return 'mv ' . shellescape(a:target) . ' ' . shellescape(a:destination)
   endfunction
 end
 
@@ -65,7 +65,7 @@ function! s:createFile() abort
   " Append filename to the path of the current buffer
   let filepath = expand("%") . filename
 
-  let output = system("touch " . fnameescape(filepath))
+  let output = system("touch " . shellescape(filepath))
   if v:shell_error
     call s:logError(cmd)
   endif
@@ -86,7 +86,7 @@ function! s:createDirectory() abort
     return
   endif
 
-  let output = system("mkdir " . fnameescape(dirpath))
+  let output = system("mkdir " . shellescape(dirpath))
   if v:shell_error
     call s:logError(output)
   endif
