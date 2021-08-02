@@ -117,7 +117,7 @@ function! s:renameItemUnderCursor() abort
   let target = trim(getline('.'))
   let filename = fnamemodify(target, ':t')
   let newname = input('Rename: ', filename)
-  if empty(newname) || newname == filename
+  if empty(newname) || newname ==# filename
     return
   endif
   let cmd = g:DovishRename(target, expand("%") . newname)
