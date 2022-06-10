@@ -34,6 +34,10 @@ if !exists('g:DovishRename')
   endfunction
 end
 
+function! s:moveCursorTo(target)
+  call search('\V'.escape(a:target, '\\').'\$')
+endfunction
+
 " https://stackoverflow.com/a/47051271
 function! s:getVisualSelection()
   if mode()=="v"
@@ -72,6 +76,7 @@ function! s:createFile() abort
 
   " Reload the buffer
   Dirvish %
+  call s:moveCursorTo(filename)
 endf
 
 function! s:createDirectory() abort
@@ -93,6 +98,7 @@ function! s:createDirectory() abort
 
   " Reload the buffer
   Dirvish %
+  call s:moveCursorTo(dirname . '/')
 endf
 
 function! s:deleteItemUnderCursor() abort
